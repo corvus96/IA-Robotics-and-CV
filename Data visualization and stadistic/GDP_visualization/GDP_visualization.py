@@ -22,7 +22,7 @@ def read_csv_as_nested_dict(filename, keyfield, separator, quote):
     nested_dict = {}
     with open(filename, newline='') as csv_file:
         # This function converts a csv file in a dictionary 
-        reader = csv.DictReader(csv_file, quotechar= quote, delimiter= separator)
+        reader = csv.DictReader(csv_file, quotechar=quote, delimiter=separator)
         for row in reader:
             nested_dict[row[keyfield]] = {
                 fieldName: fieldValue 
@@ -51,7 +51,7 @@ def build_plot_values(gdpinfo, gdpdata):
             gdp = float(gdp)
         except ValueError:
             continue
-        if (year >= gdpinfo['min_year']) and (year <= gdpinfo['max_year']):
+        if gdpinfo['min_year'] <= year <= gdpinfo['max_year']:
             data = (year, gdp)
             gdp_list_of_tuples.append(data)
         else:
@@ -80,12 +80,10 @@ def build_plot_dict(gdpinfo, country_list):
                                       gdpinfo['quote'])
     for country in country_list:
         match = gdpdata.get(country)
-        if match != None:
+        if match is not None:
             gdp_countries_data[country] = build_plot_values(gdpinfo, gdpdata[country])
         else: 
-            gdp_countries_data[country] = [(year, None) 
-                                            for year in range(gdpinfo['min_year'],gdpinfo
-                                            ['max_year'] + 1)]
+            gdp_countries_data[country] = []
     return gdp_countries_data
 
 def render_xy_plot(gdpinfo, country_list, plot_file):
@@ -104,15 +102,14 @@ def render_xy_plot(gdpinfo, country_list, plot_file):
       The image will be stored in a file named by plot_file.
     """   
     gdp_countries_data = build_plot_dict(gdpinfo, country_list)
-    xy_chart = pygal.XY(width = 600, 
-                        height = 320, 
+    xy_chart = pygal.XY(width=600, 
+                        height=320, 
                         x_title='Year', 
-                        y_title = 'GDP in current US dollars')
+                        y_title='GDP in current US dollars')
     xy_chart.title = plot_file
     for country in country_list:
         xy_chart.add(country, gdp_countries_data[country])
     xy_chart.render_in_browser()
-
 
 gdpinfo = {
         "gdpfile": "isp_gdp.csv",        # Name of the GDP CSV file
@@ -126,5 +123,6 @@ gdpinfo = {
 
 gdpdata = read_csv_as_nested_dict(gdpinfo['gdpfile'], gdpinfo['country_name'], gdpinfo['separator'], gdpinfo['quote'])
 prepare_data = build_plot_values(gdpinfo, gdpdata["Andorra"])
-build_to_plot = build_plot_dict(gdpinfo,["Andorra","luxemburgo","Aruba"])
+build_to_plot = build_plot_dict(gdpinfo,["Venezuela"])
 render_xy_plot(gdpinfo, ["Andorra", "Canada", "Aruba", "Bolivia", "United Arab Emirates"], 'Plot of GDP for select countries spanning 1960 to 2015')
+
