@@ -15,4 +15,5 @@ def fib(n, memo={}):
     memo[n] = fib(n - 1, memo) + fib(n - 2, memo)
     return memo[n]
 
+# Test case
 print(fib(110))
