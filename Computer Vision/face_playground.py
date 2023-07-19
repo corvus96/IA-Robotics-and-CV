@@ -1,6 +1,6 @@
 import cv2 
 import time
-from face_detector import FaceDetector
+from face_mesh import FaceMesh
 # Initialize the video capture object
 cap = cv2.VideoCapture(0)
 
@@ -12,7 +12,7 @@ cap.set(4, h_cam)
 # Initialize previous time variable
 p_time = 0
 
-detector = FaceDetector()
+detector = FaceMesh()
 
 # Start an infinite loop for video processing
 while True:
@@ -22,9 +22,8 @@ while True:
     # Get the current time
     c_time = time.time()
 
-    results = detector.find_faces(img)
-
-    img = detector.draw_bounding_boxes(results, img)
+    results = detector.find_mesh(img)
+    img = detector.draw_mesh(results, img)
     print(detector.find_positions(results, img))
     # Calculate and display the frames per second (FPS)
     fps = 1/(c_time-p_time)
