@@ -17,7 +17,7 @@ while True:
     c_time = time.time()
 
     results = detector.find_body(img)
-
+    print(detector.find_position(results, img))
     detector.draw_landmarkers(results, img)
     fps = 1/(c_time-p_time)
     p_time = c_time

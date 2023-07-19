@@ -7,12 +7,12 @@ class FaceDetector:
 
     """
 
-    def __init__(self):
+    def __init__(self, detection_conf=0.5):
         """
         Initializes the face detector.
 
         """
-        self.face = mp.solutions.face_detection.FaceDetection()
+        self.face = mp.solutions.face_detection.FaceDetection(detection_conf)
 
     def find_faces(self, frame):
         """
@@ -41,12 +41,13 @@ class FaceDetector:
             The frame with the bounding boxes drawn on it.
 
         """
-        height, width, _ = frame.shape
-        for id, face in enumerate(results.detections):
-            mp.solutions.drawing_utils.draw_detection(frame, face)
-            bbox_c = face.location_data.relative_bounding_box
-            bbox = int(bbox_c.xmin * width), int(bbox_c.ymin * height), int(bbox_c.width * width), int(bbox_c.height * height)
-            cv2.putText(frame, f'{int(face.score[0] * 100)} %', (bbox[0], bbox[1] - 20), cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 0), 2)
+        if results.detections:
+            height, width, _ = frame.shape
+            for id, face in enumerate(results.detections):
+                mp.solutions.drawing_utils.draw_detection(frame, face)
+                bbox_c = face.location_data.relative_bounding_box
+                bbox = int(bbox_c.xmin * width), int(bbox_c.ymin * height), int(bbox_c.width * width), int(bbox_c.height * height)
+                cv2.putText(frame, f'{int(face.score[0] * 100)} %', (bbox[0], bbox[1] - 20), cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 0), 2)
         return frame
 
     def find_positions(self, results, frame):
@@ -61,12 +62,12 @@ class FaceDetector:
             The positions of the faces in the frame.
 
         """
-        self.lm_list = []
+        self.bboxes = []
         height, width, _ = frame.shape
         if results.detections:
             for id, detection in enumerate(results.detections):
                 bbox_c = detection.location_data.relative_bounding_box
                 bbox = int(bbox_c.xmin * width), int(bbox_c.ymin * height), int(bbox_c.width * width), int(bbox_c.height * height)
-                self.lm_list.append([detection.score[0], bbox[0], bbox[1], bbox[2], bbox[3]])
+                self.bboxes.append([detection.score[0], bbox[0], bbox[1], bbox[2], bbox[3]])
 
-        return self.lm_list
+        return self.bboxes
