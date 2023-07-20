@@ -23,8 +23,8 @@ while True:
     c_time = time.time()
 
     results = detector.find_mesh(img)
-    img = detector.draw_mesh(results, img)
-    print(detector.find_positions(results, img))
+    pos = detector.find_positions(results, img)
+    img = detector.draw_points(results, img)
     # Calculate and display the frames per second (FPS)
     fps = 1/(c_time-p_time)
     p_time = c_time
